@@ -292,81 +292,78 @@ video {
           <div class="heading">
             <h4>
               {{ video.user.channel.channel_name }} 
+              
+            <div>
               <div>
-              {% if video.user.channel.verified %}
-              <small><i class="fa fa-check-circle"></i></small>
-            </h4>
-            <span id="sub-count"
+                <span id="sub-count"
               >{{ video.user.channel.subscribers.count }}</span
             >
             Subscribers
-            {% endif %}
+            </div>
+              {% if video.user.channel.verified %}
+              <small><i class="fa fa-check-circle"></i></small>
+            </h4>
+            
+              <button id="sub_btn"
+                  class="subscribe-btn"
+                  data-channel-id="{{ video.user.channel.id }}"
+                  data-subscribed="{% if request.user.is_authenticated and request.user in video.user.channel.subscribers.all %}true{% else %}false{% endif %}"
+              >
+                  {% if request.user.is_authenticated and request.user in video.user.channel.subscribers.all %}
+                      Unsubscribe
+                  {% else %}
+                      Subscribe
+                  {% endif %}
+              </button>
+              {% endif %}
+            </div>
+          
              </div>
-          </div>
-          <div>
-            <button
-              id="sub_btn"
-             
-              class="subscribe-btn"
-            >
-              Subscribe
-            </button>
-          </div>
+          
+          
         </div>
         <div>
           <div class="comment">
     <h4><b>{{ video.comments.count }} Comments</b></h4>
+    <!-- Comment Form -->
+<form method="post" action="{% url 'videos:add_comment' video.id %}">
+  {% csrf_token %}
+  <textarea name="comment" placeholder="Write a comment..." required></textarea>
+  <button type="submit">Post Comment</button>
+</form>
 
-    <form id="comment_form" method="post">
-        {% csrf_token %}
-        <input type="text" id="comment_input" placeholder="Add a comment..." required />
-        <input type="hidden" id="video-id" value="{{ video.id }}">
-        <button type="submit">Comment</button>
-    </form>
+<!-- Display Comments -->
+{% for comment in video.comments.all %}
+  <div>
+      <strong>{{ comment.channel.channel_name }}</strong> 
+      <p>{{ comment.comment }}</p>
+      
+      <!-- Reply Form -->
+      <form method="post" action="{% url 'videos:add_reply' comment.id %}">
+          {% csrf_token %}
+          <textarea name="comment" placeholder="Reply..." required></textarea>
+          <button type="submit">Reply</button>
+      </form>
 
-    <div id="comments-container">
-        {% for comment in video.comments.all %}
-            <div class="comment-tray" data-id="{{ comment.id }}">
-                <div class="details_Comment">
-                    <img src="{{ comment.channel.image.url }}" />
-                    <div class="heading">
-                        <h4>{{ comment.channel.channel_name }}</h4>
-                        <p>{{ comment.comment }}</p>
-                        <button class="reply-btn" data-parent="{{ comment.id }}">Reply</button>
-                    </div>
-                </div>
-
-                <!-- Replies Section -->
-                <div class="replies">
-                    {% for reply in comment.children %}
-                        <div class="comment-tray" data-id="{{ reply.id }}">
-                            <div class="details_Comment">
-                                <img src="{{ reply.channel.image.url }}" />
-                                <div class="heading">
-                                    <h4>{{ reply.channel.channel_name }}</h4>
-                                    <p>{{ reply.comment }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-</div>
+      <!-- Show Replies -->
+      {% for reply in comment.children %}
+          <div style="margin-left: 20px;">
+              <strong>{{ reply.channel.channel_name }}</strong> 
+              <p>{{ reply.comment }}</p>
+          </div>
+      {% endfor %}
+  </div>
+{% endfor %}
 
 
-      <hr class="mid-hr">
-
+    
+    
+  
   
 
-     
+    
+<hr class="mid-hr">
 </div>
-
-
-               
-
-               
 </section>
 </main>
 </div>
@@ -408,209 +405,33 @@ video {
   });
 </script>
 
-<!-- <script>
+<script>
   document.addEventListener("DOMContentLoaded", function () {
-      document.addEventListener("click", function (e) {
-          if (e.target.classList.contains("reply-toggle")) {
-              let commentId = e.target.getAttribute("data-comment-id");
-              let replyForm = document.querySelector(`.reply-form[data-comment-id="${commentId}"]`);
-              
-              // Hide all other reply forms before showing the clicked one
-              document.querySelectorAll(".reply-form").forEach(form => {
-                  if (form !== replyForm) {
-                      form.style.display = "none";
-                  }
-              });
-  
-              // Toggle the selected reply form
-              if (replyForm) {
-                  replyForm.style.display = replyForm.style.display === "block" ? "none" : "block";
-              }
-          }
-      });
-  
-      document.querySelectorAll(".reply-form").forEach(form => {
-          form.addEventListener("submit", function (e) {
-              e.preventDefault();
-  
-              let commentId = form.getAttribute("data-comment-id");
-              let commentInput = form.querySelector("textarea");
-              let formData = new FormData();
-              formData.append("comment", commentInput.value);
-              formData.append("parent_id", commentId);
-              formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
-  
-              fetch("{% url 'videos:add_comment' video.id %}", {
-                  method: "POST",
-                  body: formData,
-              })
-              .then(response => response.json())
-              .then(data => {
-                  if (data.id) {
-                      let newReply = `
-                          <div class="reply-container" data-comment-id="${data.id}">
-                              <strong>${data.channel_name}</strong>
-                              <p>${data.comment}</p>
-                              <button class="reply-toggle" data-comment-id="${data.id}">Reply</button>
-                              <form class="reply-form" data-comment-id="${data.id}" style="display: none;">
-                                  {% csrf_token %}
-                                  <textarea name="comment" placeholder="Reply..." required></textarea>
-                                  <button type="submit">Reply</button>
-                              </form>
-                              <div class="sub-replies"></div>
-                          </div>`;
-  
-                      let parentReplies = document.querySelector(`[data-comment-id="${data.parent_id}"] .sub-replies`);
-                      if (parentReplies) {
-                          parentReplies.innerHTML += newReply;
-                      } else {
-                          console.error("Parent comment not found!");
-                      }
-  
-                      // Reset and hide reply form
-                      commentInput.value = "";
-                      form.style.display = "none";
-                  }
-              })
-              .catch(error => console.error("Error:", error));
-          });
-      });
-  });
-  </script> -->
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const commentForm = document.getElementById("comment_form");
-      const commentInput = document.getElementById("comment_input");
-      const commentsContainer = document.getElementById("comments-container");
-      const videoId = "{{ video.id }}";
-    
-      commentForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-        const commentText = commentInput.value.trim();
-    
-        if (!commentText) {
-          alert("Please enter a comment!");
-          return;
-        }
-    
-        const formData = new FormData();
-        formData.append("comment", commentText);
-        formData.append("video_id", videoId);
-        formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
-    
-        fetch("{% url 'videos:add_comment' video_id=video.id %}", {
-          method: "POST",
-          body: formData,
-        })
-        .then(response => response.json())
-        .then(data => {
-          console.log(data);
-          console.log("hello");
-          if (data.comment_id) {
-            const newComment = `
-          <div class="comment-tray" data-id="${data.comment_id}">
-            <div class="details_Comment">
-              <img src="${data.channel_image}" alt="${data.channel_name}" />
-              <div class="heading">
-                <h4>${data.channel_name}</h4>
-                <p>${data.comment}</p>
-                <button class="reply-btn" data-parent="${data.comment_id}">Reply</button>
-                <form class="reply-form" data-parent="${data.comment_id}" style="display: none;">
-                <textarea name="comment" placeholder="Reply..." required></textarea>
-                <button type="submit">Reply</button>
-                </form>
-                </div>
-              </div>
-              <!-- Replies Section (Initially Hidden) -->
-              <div class="replies"></div>
-              </div>
-        `;
-            commentsContainer.insertAdjacentHTML("afterbegin", newComment);
-            commentInput.value = "";  // Clear the input field
-          } else {
-            console.error("Error: Comment could not be added.");
-          }
-        })
-        .catch(error => console.error("Error:", error));
-      });
-    });
-    
-  
-  
-  
-  
-    // Handle reply functionality
-    document.addEventListener("click", function (e) {
-      if (e.target.classList.contains("reply-btn")) {
-        const parentId = e.target.getAttribute("data-parent");
-        const replyForm = document.querySelector(`.reply-form[data-parent="${parentId}"]`);
-  
-        // Toggle the visibility of the reply form
-        if (replyForm) {
-          replyForm.style.display = replyForm.style.display === "block" ? "none" : "block";
-        }
-      }
-    });
-  
-    // Handle reply form submission
-    document.querySelectorAll(".reply-form").forEach(function (form) {
-      form.addEventListener("submit", function (e) {
-        e.preventDefault(); // Prevent the form from submitting the traditional way
-  
-        const commentId = form.getAttribute("data-parent");
-        const replyInput = form.querySelector("textarea"); // Get the reply input
-        const replyText = replyInput.value.trim();
-  
-        if (!replyText) {
-          alert("Please enter a reply!");
-          return;
-        }
-  
-        // Prepare the form data for the request
-        const formData = new FormData();
-        formData.append("comment", replyText);
-        formData.append("parent_id", commentId);
-        formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
-  
-        // Send the reply to the server using fetch (AJAX)
-        fetch("{% url 'videos:add_comment' video_id=video.id %}", {
-          method: "POST",
-          body: formData,
-        })
+      const subBtn = document.getElementById("sub_btn");
+      const subCount = document.getElementById("sub-count");
+
+      subBtn.addEventListener("click", function () {
+          const channelId = subBtn.getAttribute("data-channel-id");
+          const isSubscribed = subBtn.getAttribute("data-subscribed") === "true";
+
+          fetch(`/subscribe/${channelId}/`, {
+              method: "POST",
+              headers: {
+                  "X-CSRFToken": "{{ csrf_token }}",
+                  "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ subscribed: !isSubscribed })
+          })
           .then(response => response.json())
           .then(data => {
-            if (data.id) {
-              // Append the new reply to the corresponding parent comment
-              const replyMarkup = `
-                <div class="comment-tray" data-id="${data.id}">
-                  <div class="details_Comment">
-                    <img src="${data.channel_image}" alt="${data.channel_name}" />
-                    <div class="heading">
-                      <h4>${data.channel_name}</h4>
-                      <p>${data.comment}</p>
-                    </div>
-                  </div>
-                </div>
-              `;
-              
-              const parentComment = document.querySelector(`[data-id="${commentId}"] .replies`);
-              if (parentComment) {
-                parentComment.insertAdjacentHTML("beforeend", replyMarkup);
+              if (data.success) {
+                  subBtn.setAttribute("data-subscribed", data.subscribed);
+                  subBtn.textContent = data.subscribed ? "Unsubscribe" : "Subscribe";
+                  subCount.textContent = data.subscriber_count;
               }
-  
-              // Clear the reply input field and hide the reply form
-              replyInput.value = "";
-              form.style.display = "none";
-            } else {
-              console.error("Error: Reply could not be added.");
-            }
           })
           .catch(error => console.error("Error:", error));
       });
-    });
-  
-
-   </script>
-  
-
+  });
+</script>
 {% endblock content %}

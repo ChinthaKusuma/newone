@@ -15,12 +15,11 @@ urlpatterns = [
     path("watch/<int:pk>/", views.videoDetail, name="video-detail"),
 
     # Saving Comment to db
-    path("ajax-save-comment/", views.ajax_save_comment, name="ajax-save-comment"),
-    path("ajax-delete-comment/", views.ajax_delete_comment, name="delete-comment"),
+    
 
     # Subscribe Function
-    path("add-sub/<int:id>/", views.add_new_subscribers, name="add_new_subscribers"),
-    path("sub-load/<int:id>/", views.load_channel_subs, name="load_channel_subs"),
+    # path("add-sub/<int:id>/", views.add_new_subscribers, name="add_new_subscribers"),
+    # path("sub-load/<int:id>/", views.load_channel_subs, name="load_channel_subs"),
 
     # Like Function
     path("add-like/<int:id>/", views.add_new_like, name="add_new_like"),
@@ -29,12 +28,15 @@ urlpatterns = [
 
     # Saving Video TO Profile
     
-    path("video/search/", views.searchView, name="search"),
+    # path("video/search/", views.searchView, name="search"),
 
      # Tag URL
     path("tags/video/<slug:tag_slug>", views.tag_list, name="tags"),
-    path('comment/add/<int:video_id>/', views.add_comment, name='add_comment'),
     
+    path('comment/add/<int:video_id>/', views.add_comment, name='add_comment'),
+    path('comment/reply/<int:comment_id>/', views.add_reply, name='add_reply'),
+    path("subscribe/<int:channel_id>/", views.subscribe_channel, name="subscribe-channel"),
+
    
 ]
 
