@@ -1,0 +1,185 @@
+<div class="channel-art">
+  {% if channel.channel_art.url %}
+  <img src="{{ channel.channel_art.url }}" alt="Channel Art" />
+  {% else %}
+  <img
+    src="https://wallpaper.dog/large/10702685.jpg"
+    alt="Default Channel Art"
+  />
+  {% endif %}
+</div>
+
+<div class="channel-header">
+  <div class="channel-img-title">
+    {% if channel.image %}
+    <img
+      class="channel-profile-img"
+      src="{{ channel.image.url }}"
+      alt="Channel Image"
+    />
+    {% else %}
+    <img
+      class="channel-profile-img"
+      src="https://thumbs.dreamstime.com/b/default-avatar-profile-vector-user-profile-default-avatar-profile-vector-user-profile-profile-179376714.jpg"
+      alt="Default Profile"
+    />
+    {% endif %}
+    <div class="channel-image-texts">
+      <h4>{{ channel.channel_name }}</h4>
+      <span id="count"></span> <span>subscribers</span>
+    </div>
+  </div>
+  <div class="channel-header-btns">
+    <a href="#" class="btn-gray">Join</a>
+    <button id="sub_btn" onclick="addsub()" class="btn-red sub_button_channel">
+      Subscribe
+    </button>
+  </div>
+</div>
+
+<div class="channel-header-links">
+  <a href="{% url 'studio' channel.id %}">Context</a>
+  <a href="{% url 'videos:index'  %}">Home</a>
+  <a href="{% url 'channel-videos' channel.id %}">Videos</a>
+  <a href="{% url 'channel-community' channel.id %}" class="hidden"
+    >Community</a
+  >
+  <a href="{% url 'channel-about' channel.id %}">About</a>
+  <a href="{% url 'channel-profile' channel.id %}" class="hidden">
+    <i class="material-icons">search</i>
+  </a>
+</div>
+
+<hr />
+
+{% include 'channel/partials/subscribe-axios.html' %}
+
+<style>
+  /* General Styling */
+  .channel-art {
+    width: 100%;
+    height: 200px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .channel-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .channel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin-top: 10px;
+  }
+
+  .channel-img-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .channel-profile-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+
+  .channel-image-texts h4 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+  }
+
+  .channel-image-texts span {
+    color: #777;
+    font-size: 14px;
+  }
+
+  /* Buttons */
+  .channel-header-btns {
+    display: flex;
+    gap: 15px;
+  }
+
+  .btn-gray {
+    padding: 10px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    background: #e0e0e0;
+    color: #333;
+  }
+
+  .btn-red {
+    padding: 10px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    background: #cc0000;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .btn-red:hover {
+    background: #b00000;
+  }
+
+  /* Navigation Links */
+  .channel-header-links {
+    display: flex;
+    gap: 20px;
+    padding: 15px 20px;
+    border-bottom: 2px solid #e0e0e0;
+  }
+
+  .channel-header-links a {
+    text-decoration: none;
+    color: #555;
+    font-size: 16px;
+    font-weight: 500;
+    transition: 0.3s;
+  }
+
+  .channel-header-links a:hover {
+    color: #cc0000;
+  }
+
+  /* Hide elements */
+  .hidden {
+    display: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .channel-header {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .channel-header-btns {
+      margin-top: 10px;
+    }
+
+    .channel-header-links {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+</style>

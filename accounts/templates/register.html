@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up | YouTube Clone</title>
+    <link rel="stylesheet" href="{% static 'accounts/styles.css' %}" />
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="logo">
+        <span>YouTube Clone</span>
+      </div>
+    </header>
+
+    <div class="auth-container">
+      <div class="auth-form">
+        <h1>Create Account</h1>
+        <form method="POST">
+          {% csrf_token %}
+
+          <!-- Username -->
+          <div class="form-group">
+            <label for="id_username">Username</label>
+            {{ form.username }}
+            <small class="error">{{ form.username.errors }}</small>
+          </div>
+
+          <!-- First Name -->
+          <div class="form-group">
+            <label for="id_first_name">First Name</label>
+            {{ form.first_name }}
+            <small class="error">{{ form.first_name.errors }}</small>
+          </div>
+
+          <!-- Last Name -->
+          <div class="form-group">
+            <label for="id_last_name">Last Name</label>
+            {{ form.last_name }}
+            <small class="error">{{ form.last_name.errors }}</small>
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label for="id_email">Email</label>
+            {{ form.email }}
+            <small class="error">{{ form.email.errors }}</small>
+          </div>
+
+          <!-- Password -->
+          <div class="form-group">
+            <label for="id_password">Password</label>
+            {{ form.password }}
+            <small class="error">{{ form.password.errors }}</small>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="form-group">
+            <label for="id_password_confirm">Confirm Password</label>
+            {{ form.password_confirm }}
+            <small class="error">{{ form.password_confirm.errors }}</small>
+          </div>
+
+          <button type="submit" class="submit-btn">Sign Up</button>
+        </form>
+
+        <p class="existing-account">
+          Already have an account?
+          <a href="{% url 'accounts:login' %}">Sign in</a>
+        </p>
+      </div>
+    </div>
+
+    <footer>
+      <p>&copy; 2025 YouTube Clone | All Rights Reserved</p>
+    </footer>
+  </body>
+</html>

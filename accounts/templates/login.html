@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | YouTube Clone</title>
+    <link rel="stylesheet" href="{% static 'accounts/login.css' %}" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="auth-form">
+        <div class="logo">
+          <span>YouTube Clone</span>
+        </div>
+        <h1>Sign In</h1>
+
+        <!-- Display Django Messages (Error/Success) -->
+        {% if messages %} {% for message in messages %}
+        <div
+          class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}"
+        >
+          {{ message }}
+        </div>
+        {% endfor %} {% endif %}
+
+        <form method="POST">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label for="username">Username</label>
+            {{ form.username }} {% if form.username.errors %}
+            <small class="error-message">{{ form.username.errors.0 }}</small>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            {{ form.password }} {% if form.password.errors %}
+            <small class="error-message">{{ form.password.errors.0 }}</small>
+            {% endif %}
+          </div>
+
+          <button type="submit">Log In</button>
+        </form>
+
+        <p class="signup-link">
+          Don't have an account?
+          <a href="{% url 'accounts:register' %}">Sign up</a>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

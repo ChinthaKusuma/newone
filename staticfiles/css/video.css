@@ -1,0 +1,205 @@
+body {
+  font-family: "Roboto", Arial, sans-serif;
+  background-color: #ffffff; /* White background */
+  color: #000000; /* Black text */
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+a:hover {
+  color: #065fd4;
+}
+
+.fa {
+  color: black;
+}
+
+/* Centered Main Layout */
+.single_pages {
+  display: flex;
+  flex-direction: column; /* Stack video and comments */
+  align-items: center;
+  width: 70%;
+  margin: 0 auto;
+  margin-top: 5%;
+}
+
+/* Video Player */
+video {
+  width: 100%;
+  max-height: 500px;
+  border-radius: 12px;
+  background: black;
+}
+
+/* Video Details Section */
+.left_content {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  width: 100%;
+}
+
+/* Video Actions */
+.view {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+}
+
+.icon button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: black;
+}
+
+.icon button.active {
+  color: #065fd4;
+}
+
+.icon button.active1 {
+  color: red;
+}
+
+/* Channel Details */
+.details {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.details .img img {
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+}
+
+.details h4 {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.details .fa-check-circle {
+  color: #065fd4;
+  margin-left: 5px;
+}
+
+/* Subscribe Button */
+.subscribe-btn {
+  background-color: red;
+  color: white;
+  padding: 10px 20px;
+  font-weight: bold;
+  border-radius: 20px;
+  cursor: pointer;
+  border: none;
+}
+
+.subscribe-btn:hover {
+  background-color: #c00;
+}
+
+.unsubscribe-btn {
+  background-color: gray;
+  color: white;
+}
+
+/* Comments Section */
+.comment {
+  width: 100%;
+  background: #f1f1f1;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.comment h4 {
+  margin-bottom: 10px;
+  color: black;
+}
+
+#comment_form {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+#comment_form input {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background: white;
+  color: black;
+}
+
+#comment_form button {
+  background-color: #065fd4;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#comment_form button:hover {
+  background-color: #004cbf;
+}
+
+/* Individual Comments */
+.comment-tray {
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.comment-tray .details_Comment {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.comment-tray img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.comment-tray .heading h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: black;
+}
+
+.comment-tray p {
+  color: #333;
+}
+
+/* Delete Button */
+.comment-like button {
+  background: none;
+  border: none;
+  color: red;
+  cursor: pointer;
+}
+.video-page {
+  display: flex;
+  flex-direction: column;
+}

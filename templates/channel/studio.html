@@ -1,0 +1,233 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=0"
+    />
+    <title>YouTube Studio</title>
+    <link rel="shortcut icon" href="{% static 'assets/img/favicon.png' %}" />
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #fff;
+        color: #000;
+      }
+      .header {
+        background-color: #fff;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #ddd;
+      }
+      .sidebar {
+        width: 250px;
+        height: 100vh;
+        background: #f9f9f9;
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding-top: 60px;
+        border-right: 1px solid #ddd;
+      }
+      .sidebar ul {
+        list-style: none;
+        padding: 0;
+      }
+      .sidebar ul li {
+        padding: 15px 20px;
+        color: #606060;
+        cursor: pointer;
+      }
+      .sidebar ul li:hover {
+        background: #e5e5e5;
+      }
+      .page-wrapper {
+        margin-left: 260px;
+        padding: 20px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .table th,
+      .table td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+      }
+      .studio_image {
+        margin-left: 55%;
+        width: 40%;
+      }
+      .table tbody tr:hover {
+        background: #f5f5f5;
+      }
+      .btn {
+        padding: 8px 15px;
+        text-decoration: none;
+        border-radius: 5px;
+        display: inline-block;
+        text-align: center;
+      }
+      .btn-primary {
+        background: #ff0000;
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: darkred;
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+      }
+      .btn-edit {
+        background: #007bff;
+        color: #fff;
+      }
+      .btn-edit:hover {
+        background: #0056b3;
+      }
+      .btn-delete {
+        background: #dc3545;
+        color: #fff;
+      }
+      .btn-delete:hover {
+        background: #a71d2a;
+      }
+      .video-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      .video-card {
+        border: 1px solid #ddd;
+        padding: 16px;
+        border-radius: 8px;
+        width: 320px;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        background: #fff;
+      }
+      .video-thumbnail img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+      .video-info {
+        margin-top: 10px;
+      }
+      .video-preview video {
+        width: 100%;
+        border-radius: 8px;
+        margin-top: 10px;
+      }
+      .video-actions {
+        margin-top: 10px;
+        display: flex;
+        gap: 8px;
+      }
+      .btn {
+        display: inline-block;
+        padding: 6px 12px;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 14px;
+        text-align: center;
+        flex: 1;
+      }
+      .btn-primary {
+        background-color: blue;
+        color: white;
+      }
+      .btn-edit {
+        background-color: orange;
+        color: white;
+      }
+      .btn-delete {
+        background-color: red;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-wrapper">
+      <div class="header">
+        <div class="header-left">
+          <a href="{% url 'videos:index' %}"
+            ><img
+              src="{% static 'images/studio.png' %}"
+              alt="Logo"
+              class="studio_image"
+          /></a>
+        </div>
+        <div>
+          <a href="{% url 'accounts:logout' %}">Logout</a>
+        </div>
+        <div class="top-nav-search">
+          <form>
+            <input type="text" placeholder="Search here" />
+            <button class="btn btn-primary" type="submit">Search</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="page-wrapper">
+        <div class="content">
+          <h2>All Videos</h2>
+          <div class="video-list">
+            {% for v in videos %}
+            <div class="video-card">
+              <div class="video-thumbnail">
+                <img src="{{ v.thumbnail.url }}" alt="{{ v.title }}" />
+              </div>
+              <div class="video-info">
+                <h3>{{ v.title }}</h3>
+                <p><strong>Visibility:</strong> {{ v.visibility|title }}</p>
+                <p><strong>Date:</strong> {{ v.date }}</p>
+                <p><strong>Views:</strong> {{ v.views }}</p>
+                <p><strong>Comments:</strong> {{ v.comment.all.count }}</p>
+                <p><strong>Likes:</strong> {{ v.likes.all.count }}</p>
+              </div>
+              <div class="video-preview">
+                <video controls>
+                  <source src="{{ v.video.url }}" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+              <div class="video-actions">
+                <a
+                  href="{% url 'videos:video-detail' v.id %}"
+                  class="btn btn-primary"
+                  >View</a
+                >
+                <a
+                  href="{% url 'edit-video' v.user.id v.id %}"
+                  class="btn btn-edit"
+                  >Edit</a
+                >
+                <a href="{% url 'delete-video' v.id %}" class="btn btn-delete"
+                  >Delete</a
+                >
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
