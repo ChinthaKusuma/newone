@@ -33,7 +33,7 @@ urlpatterns = [
 
      # Tag URL
     path("tags/video/<slug:tag_slug>", views.tag_list, name="tags"),
-    path("comment/add/<int:video_id>/", views.add_comment, name="add_comment"),
+    path('comment/add/<int:video_id>/', views.add_comment, name='add_comment'),
     
    
 ]

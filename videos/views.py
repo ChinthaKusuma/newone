@@ -9,21 +9,77 @@ from taggit.models import Tag
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+
+from videos.forms import CommentForm
 from .models import Comment, Video
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
+
+
+def add_comment(request, video_id):
+    if request.method == "POST":
+        print("POST request received")  # Check if this line prints
+        video = get_object_or_404(Video, id=video_id)
+        comment_text = request.POST.get("comment")
+        if comment_text:
+            comment = Comment.objects.create(
+                video=video,
+                channel=request.user.channel,
+                comment=comment_text
+            )
+            print(comment)
+            print("hello-world")
+            return JsonResponse({
+                "comment_id": comment.id,
+                "comment": comment.comment,
+                "channel_name": comment.channel.channel_name,
+                "channel_image": comment.channel.image.url if comment.channel.image else "default-avatar-url",
+                "message": "Comment added!"
+            }, status=201)
+    else:
+        print("This is not a POST request")  # Check if this line prints
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+
+
 
 
 # urls.py
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
-from .models import Comment, Video
-from django.contrib.auth.decorators import login_required
+# from django.shortcuts import render, get_object_or_404, redirect
+# from django.http import JsonResponse
+# from .models import Comment, Video
+# from django.contrib.auth.decorators import login_required
 
 
 
 
+# def add_comment(request, video_id):
+#     if request.method == 'POST':
+#         form = CommentForm(request.POST)
+#         if form.is_valid():
+#             comment = form.save(commit=False)
+#             comment.video_id = video_id
+#             parent_id = request.POST.get('parent_id')
+
+#             if parent_id:
+#                 comment.parent_id = parent_id  # This sets the reply to the correct parent
+
+#             comment.channel = request.user.channel  # Assuming logged in user has a channel
+#             comment.save()
+
+#             # Return a response with the new comment data to be used in the template
+#             response_data = {
+#                 'id': comment.id,
+#                 'channel_name': comment.channel.channel_name,
+#                 'comment': comment.comment,
+#                 'channel_image': comment.channel.image.url if comment.channel.image else 'default_image_url',  # Adjust default image URL
+#             }
+
+#             return JsonResponse(response_data)
+
+#     return JsonResponse({'error': 'Invalid data'}, status=400)
 # @login_required
 # def add_comment(request, video_id):
 #     if request.method == "POST":
@@ -35,52 +91,31 @@ from django.contrib.auth.decorators import login_required
 #         if parent_id:
 #             parent_comment = get_object_or_404(Comment, id=parent_id)
 
+#         # Create the new comment
 #         comment = Comment.objects.create(
 #             video=video, channel=request.user.channel, comment=comment_text, parent=parent_comment
 #         )
 
-#         return JsonResponse({
+#         # Prepare the response data for the new comment
+#         response_data = {
 #             "id": comment.id,
 #             "comment": comment.comment,
 #             "channel_name": comment.channel.channel_name,
+#             "channel_image": comment.channel.image.url if comment.channel.image else "default-image-url",
 #             "date_added": comment.date_added.strftime("%Y-%m-%d %H:%M"),
 #             "parent_id": parent_id,
-#         })
+#         }
+
+#         # If this comment has a parent, fetch the replies
+#         if parent_comment:
+#             replies = list(parent_comment.children.values(
+#                 "id", "comment", "channel__channel_name", "date_added"
+#             ).order_by("-date_added"))
+#             response_data["replies"] = replies
+
+#         return JsonResponse(response_data)
 
 #     return JsonResponse({"error": "Invalid request"}, status=400)
-@login_required
-def add_comment(request, video_id):
-    if request.method == "POST":
-        video = get_object_or_404(Video, id=video_id)
-        comment_text = request.POST.get("comment")
-        parent_id = request.POST.get("parent_id", None)
-        
-        parent_comment = None
-        if parent_id:
-            parent_comment = get_object_or_404(Comment, id=parent_id)
-
-        # Create the new comment
-        comment = Comment.objects.create(
-            video=video, channel=request.user.channel, comment=comment_text, parent=parent_comment
-        )
-
-        # Fetch all replies if this comment has a parent
-        replies = []
-        if parent_comment:
-            replies = list(parent_comment.children.values(
-                "id", "comment", "channel__channel_name", "date_added"
-            ).order_by("-date_added"))
-
-        return JsonResponse({
-            "id": comment.id,
-            "comment": comment.comment,
-            "channel_name": comment.channel.channel_name,
-            "date_added": comment.date_added.strftime("%Y-%m-%d %H:%M"),
-            "parent_id": parent_id,
-            "replies": replies,  # Include replies if it's a reply
-        })
-
-    return JsonResponse({"error": "Invalid request"}, status=400)
 
 
 def get_comments(request, video_id):
@@ -318,22 +353,22 @@ def savedVideos(request):
 #     return render(request, "test_temp/contact.html")
 
 
-@login_required
-def add_comment(request, video_id):
-    """Handles adding a new comment."""
-    if request.method == "POST":
-        video = get_object_or_404(Video, id=video_id)
-        comment_text = request.POST.get("comment")
+# @login_required
+# def add_comment(request, video_id):
+#     """Handles adding a new comment."""
+#     if request.method == "POST":
+#         video = get_object_or_404(Video, id=video_id)
+#         comment_text = request.POST.get("comment")
 
-        if comment_text:
-            comment = Comment.objects.create(
-                video=video,
-                channel=request.user.channel,  # Assuming a user has a related Channel
-                comment=comment_text
-            )
-            return JsonResponse({"message": "Comment added!", "comment_id": comment.id}, status=201)
+#         if comment_text:
+#             comment = Comment.objects.create(
+#                 video=video,
+#                 channel=request.user.channel,  # Assuming a user has a related Channel
+#                 comment=comment_text
+#             )
+#             return JsonResponse({"message": "Comment added!", "comment_id": comment.id}, status=201)
 
-    return JsonResponse({"error": "Invalid request"}, status=400)
+#     return JsonResponse({"error": "Invalid request"}, status=400)
 
 @login_required
 def add_reply(request, comment_id):
